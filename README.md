@@ -1,23 +1,35 @@
-# PPT to PDF Converter
+# PdfConverter v2.1
 
-A simple and user-friendly Windows desktop application that converts PowerPoint presentations (PPT/PPTX) to PDF format with a graphical interface.
+A production-grade Windows desktop application that converts Microsoft Office documents to PDF format with intelligent file management and user control.
 
 ## Features
 
-- 🎨 **User-Friendly Interface**: Clean and intuitive GUI built with Tkinter
-- 📁 **Batch Conversion**: Convert multiple PowerPoint files at once
-- ⚡ **Fast Processing**: Quick conversion using Windows COM API
-- 🖥️ **Windows-Native**: Direct integration with Microsoft Office
+- 🎨 **Intuitive Interface**: Clean GUI with file type selection and preview
+- 📁 **Smart Batch Conversion**: Convert multiple files with granular type selection
+- 📊 **File Preview**: See exactly what will be converted before starting
+- 📂 **Organized Output**: PDFs saved in timestamped folders for easy management
+- ⚡ **Non-Blocking UI**: Background processing keeps the interface responsive
+- 🏗️ **Clean Architecture**: SOLID principles, extensible design
+- 🖥️ **Windows-Native**: Direct integration with Microsoft Office via COM
+- 📊 **Excel Support**: NEW in v2.1 - Smart layout optimization for spreadsheets
+- 🔧 **Production-Ready**: Structured logging, error handling, thread safety
+- 📦 **Standalone Executable**: No Python installation required
+
+## Supported Formats
+
+- **PowerPoint**: `.ppt`, `.pptx`
+- **Word**: `.doc`, `.docx`
+- **Excel**: `.xls`, `.xlsx`, `.xlsm` ✨ NEW in v2.1
 
 ## Requirements
 
 - **Windows** operating system
 - **Python 3.7+**
-- **Microsoft PowerPoint** installed on your system
+- **Microsoft Office** (PowerPoint and/or Word) installed on your system
 
 ## Installation
 
-### 1. Clone or Download the Project
+### 1. Clone the Repository
 
 ```bash
 git clone <repository-url>
@@ -37,75 +49,118 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-### 4. Complete pywin32 Setup (Important!)
-
-This step is essential for `win32com.client` to work properly:
-
-```bash
-python -m Scripts.pywin32_postinstall -install
-```
-
 ## Usage
+
+### Option 1: Standalone Executable (Recommended)
+
+1. Download `PdfConverter.exe` from releases
+2. Double-click to run (no installation needed)
+
+### Option 2: Run from Source
 
 Run the application:
 
 ```bash
-python converters/ppt_to_pdf.py
+python -m app.main
 ```
 
-1. Click **"Select Folder"** to choose a directory containing PowerPoint files
-2. The app will automatically detect all `.ppt` and `.pptx` files
-3. Click **"Convert to PDF"** to start the conversion
-4. PDF files will be saved in the same directory as the original files
+### Using the Application
+
+1. **Select File Types**: Check the boxes for file types you want to convert (PowerPoint, Word, Excel)
+2. **Select Folder**: Click "Select Folder" and choose a directory containing Office files
+3. **Preview Files**: Review the list of files that will be converted
+4. **Convert**: Click "Convert to PDF" to start
+5. **Monitor Progress**: Watch the progress bar
+6. **Access PDFs**: Click "Open Output Folder" to view converted files
+
+**Output Location**: PDFs are saved in a timestamped folder (e.g., `PDF_Output_20260113_141500`) within the selected directory.
 
 ## Project Structure
 
 ```
 PdfConverter/
-├── converters/
-│   └── ppt_to_pdf.py          # Main application file
-├── requirements.txt            # Python dependencies
-├── .gitignore                 # Git ignore rules
-├── README.md                  # This file
-└── README_TR.md               # Turkish documentation
+├── app/
+│   ├── main.py                # Application entry point
+│   └── config.py              # Configuration
+├── core/
+│   ├── interfaces/
+│   │   └── converter.py       # IConverter interface
+│   ├── models/
+│   │   └── conversion_job.py  # Domain models
+│   └── services/
+│       ├── conversion_service.py
+│       └── file_scanner.py
+├── adapters/
+│   └── office/
+│       ├── powerpoint_adapter.py
+│       └── word_adapter.py
+├── ui/
+│   └── desktop/
+│       └── main_window.py     # Tkinter GUI
+├── utils/
+│   ├── exceptions.py          # Custom exceptions
+│   ├── logging.py             # Logging setup
+│   └── threading.py           # COM-safe worker thread
+└── requirements.txt
 ```
 
-## Roadmap & Future Features
+## Architecture
 
-This project is actively being developed. Future enhancements will include:
+This project follows **Clean Architecture** principles:
 
-- ✅ PowerPoint to PDF (Current)
-- 📄 Word (DOCX/DOC) to PDF conversion
-- 📊 Excel (XLSX/XLS) to PDF conversion
-- 🎯 Batch processing with progress tracking
-- ⚙️ Configuration options for conversion settings
-- 📱 Command-line interface (CLI)
-- 🌐 Web-based interface
+- **Core Domain**: Business logic and interfaces (framework-agnostic)
+- **Adapters**: Office COM integration (infrastructure)
+- **UI**: Presentation layer (Tkinter)
+- **Dependency Inversion**: UI and adapters depend on core abstractions
 
-Stay tuned for updates!
+### Key Design Principles
+
+- **SOLID**: Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion
+- **Thread Safety**: COM objects are created and used within worker threads
+- **Extensibility**: New converters can be added without modifying existing code
+
+## Roadmap
+
+| Version | Features |
+|---------|----------|
+| v2.0 ✅ | Refactored architecture + Word support |
+| v2.1 ✅ | Excel support + File type selection + Output folder management + Standalone .exe |
+| v2.2 | Image file support (.jpg, .png) + Advanced Excel layout modes |
+| v3.0 | Web API (FastAPI) + Multi-language support |
+| v3.1 | Desktop installer (MSI) |
+| v4.0 | Cross-platform support |
 
 ## Troubleshooting
 
 ### "Module not found: win32com"
 
-Make sure you completed step 4 of the installation process.
+Make sure you installed `pywin32`:
 
-### "You do not have the permissions to install COM objects"
+```bash
+pip install pywin32
+```
 
-This is a non-critical warning and can be safely ignored if the pywin32 extensions were successfully installed.
+### "Failed to initialize Word/PowerPoint"
 
-### Conversion fails silently
+Ensure Microsoft Office is installed and properly licensed on your system.
 
-Ensure Microsoft PowerPoint is installed and the PowerPoint file is not corrupted or password-protected.
+### Application freezes during conversion
+
+This should not happen in v2.0. If it does, please report it as a bug.
+
+## Contributing
+
+Contributions are welcome! Please ensure:
+
+- Code follows SOLID principles
+- New converters implement the `IConverter` interface
+- Changes are documented
 
 ## License
 
 This project is open-source and available under the MIT License.
 
-## Contributing
-
-Contributions are welcome! Feel free to open issues or submit pull requests.
-
 ## Author
 
-Created as a utility for batch PowerPoint to PDF conversions on Windows systems.
+Created as a production-grade utility for batch Office to PDF conversions on Windows systems.
+

@@ -1,2 +1,3 @@
 pywin32>=305
+pyinstaller>=6.0.0
 # Windows COM support için post-install gerekli: python Scripts/pywin32_postinstall.py -install
